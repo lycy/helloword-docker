@@ -1,7 +1,8 @@
 #!groovy
 
 node {
-    def dockerTagName = "lyvy/hello-word"
+    def buildTimestamp = sh(script: 'date +%Y%m%d%H%M%S%Z', returnStdout: true).replaceAll("\r", "").replaceAll("\n", "")
+    def dockerTagName = "docker.io/lyvy/hello-word:${buildTimestamp}"
 
    stage('checkout') {
     git branch: "${BRANCH_NAME}", url: 'https://github.com/lycy/helloword-docker.git'
@@ -18,18 +19,22 @@ node {
       }
    }
    stage('push') {
-       docker.withRegistry("https://hub.docker.com/r/lyvy") {
+       docker.withRegistry("https://docker.io/") {
            docker.image(dockerTagName).push()
        }
    }
 
+   stage('rm images') {
+        sh "docker rmi ${dockerTagName}"
+    }
+
    stage('deploy') {
       if (isUnix()) {
-           def config = sh(script: "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X GET -H 'Content-Type: application/json, Accept: application/json' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s17'", returnStdout: true)
+           def config = sh(script: "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X GET -H 'Content-Type: application/json, Accept: application/json' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s17' | node rancherUpgradeGenerate.js ${dockerTagName} ", returnStdout: true)
            sh "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"inServiceStrategy\": {\"launchConfig\": ${config}}, \"toServiceStrategy\":null}' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s17?action=upgrade'"
       } else {
            def config = sh(script: "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X GET -H 'Content-Type: application/json, Accept: application/json' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s17' | node rancherUpgradeGenerate.js ${dockerTagName}", returnStdout: true)
-           bat(/curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"inServiceStrategy\": {\"launchConfig\": ${config}}, \"toServiceStrategy\":null}' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s17?action=upgrade'/)
+           bat "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"inServiceStrategy\": {\"launchConfig\": ${config}}, \"toServiceStrategy\":null}' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s17?action=upgrade'"
       }
    }
 }
