@@ -1,0 +1,32 @@
+#!groovy
+
+node {
+    def dockerTagName = "lyvy/hello-word"
+    def containerName = "lyvy-hell-word-container"
+
+   stage('checkout') {
+    git branch: "${BRANCH_NAME}", url: 'https://github.com/lycy/helloword-docker.git'
+
+   }
+
+   stage('rm old images') {
+    sh "if docker ps|grep -i ${containerName}; then docker stop ${containerName};fi"
+    sh "if docker ps -a|grep -i ${containerName}; then docker rm ${containerName};fi"
+    sh "if docker images|grep -i ${dockerTagName}; then docker rmi ${dockerTagName};fi"
+   }
+
+    stage('build') {
+      // Run the maven build
+      if (isUnix()) {
+         sh "mvn clean package -DskipTests"
+         sh "docker build -t ${dockerTagName} -f Dockerfile ."
+      } else {
+         bat "mvn clean package -DskipTests/"
+         bat "docker build -t ${dockerTagName} -f Dockerfile ."
+      }
+   }
+
+   stage('deploy') {
+      sh "docker run -d -p 11111:11111 --name ${containerName} ${dockerTagName}"
+   }
+}

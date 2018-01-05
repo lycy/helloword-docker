@@ -24,4 +24,10 @@ public class HelloWordController {
         map.put("param", "Hello Word!");
         return ResponseEntity.ok(map);
     }
+    @RequestMapping(value = "/message")
+    public ResponseEntity getMessage(){
+        Map<String, Object> map = new HashMap<>();
+        map.put("param", "message");
+        return ResponseEntity.ok(map);
+    }
 }
