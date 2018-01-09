@@ -16,14 +16,8 @@ node {
    }
 
     stage('build') {
-      // Run the maven build
-      if (isUnix()) {
-         sh "mvn clean package -DskipTests"
-         sh "docker build -t ${dockerTagName} -f Dockerfile ."
-      } else {
-         bat "mvn clean package -DskipTests/"
-         bat "docker build -t ${dockerTagName} -f Dockerfile ."
-      }
+        sh "mvn clean package -DskipTests"
+        sh "docker build -t ${dockerTagName} -f Dockerfile ."
    }
 
    stage('deploy') {
