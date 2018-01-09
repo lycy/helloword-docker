@@ -23,7 +23,7 @@ node {
     }
 
    stage('deploy') {
-        def config = sh(script: "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X GET -H 'Content-Type: application/json, Accept: application/json' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s17' | node rancherUpgradeGenerate.js ${dockerTagName} ", returnStdout: true)
-        sh "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"inServiceStrategy\": {\"launchConfig\": ${config}}, \"toServiceStrategy\":null}' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s17?action=upgrade'"
+        def config = sh(script: "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X GET -H 'Content-Type: application/json, Accept: application/json' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s19' | node rancherUpgradeGenerate.js ${dockerTagName} ", returnStdout: true)
+        sh "curl -u 'B525754570AF17F7D34E:uksAW85i8GssEzDXeHQDNQYSRLKSoqH3ErGBf9T6' -X POST -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{\"inServiceStrategy\": {\"launchConfig\": ${config}}, \"toServiceStrategy\":null}' 'http://192.168.99.100:8090/v2-beta/projects/1a5/services/1s19?action=upgrade'"
    }
 }
