@@ -21,6 +21,6 @@ node {
    }
 
    stage('deploy') {
-      sh "docker run -d -p 11111:11110 --name ${containerName} ${dockerTagName}"
+      sh "docker run -d -p 11111:11111 --name ${containerName} ${dockerTagName}"
    }
 }
