@@ -21,7 +21,7 @@ public class HelloWordController {
     @RequestMapping(value = "/helloWord")
     public ResponseEntity helloWord(){
         Map<String, Object> map = new HashMap<>();
-        map.put("param", "Hello Word!");
+        map.put("param", "Hello Word!test");
         return ResponseEntity.ok(map);
     }
     @RequestMapping(value = "/message")
